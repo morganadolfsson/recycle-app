@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
+import { getErrorStatus } from '../lib/errors';
 
 export default function LoginPage() {
   const { t } = useTranslation();
@@ -21,8 +22,7 @@ export default function LoginPage() {
       await login(email, password);
       navigate('/');
     } catch (err: unknown) {
-      const status = (err as { status?: number }).status;
-      setError(status === 401 ? t('auth.errors.invalidCredentials') : t('auth.errors.generic'));
+      setError(getErrorStatus(err) === 401 ? t('auth.errors.invalidCredentials') : t('auth.errors.generic'));
     } finally {
       setLoading(false);
     }
@@ -33,9 +33,10 @@ export default function LoginPage() {
       <div className="auth-card">
         <h1>{t('auth.loginTitle')}</h1>
         <form onSubmit={handleSubmit}>
-          <label>
+          <label htmlFor="login-email">
             {t('auth.email')}
             <input
+              id="login-email"
               type="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
@@ -43,9 +44,10 @@ export default function LoginPage() {
               autoComplete="email"
             />
           </label>
-          <label>
+          <label htmlFor="login-password">
             {t('auth.password')}
             <input
+              id="login-password"
               type="password"
               value={password}
               onChange={e => setPassword(e.target.value)}

@@ -24,7 +24,7 @@ export default function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
-            <Route path="/apply" element={<ProtectedRoute><ApplyPage /></ProtectedRoute>} />
+            <Route path="/apply" element={<ProtectedRoute roles={['donor']}><ApplyPage /></ProtectedRoute>} />
             <Route path="/my-donations" element={<ProtectedRoute><MyDonationsPage /></ProtectedRoute>} />
             <Route path="/stats" element={<ProtectedRoute><StatsPage /></ProtectedRoute>} />
             <Route path="/admin" element={<ProtectedRoute roles={['admin']}><AdminPage /></ProtectedRoute>} />

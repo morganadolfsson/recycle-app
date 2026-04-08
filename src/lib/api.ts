@@ -20,6 +20,7 @@ async function request<T>(
     method,
     headers,
     body: body !== undefined ? JSON.stringify(body) : undefined,
+    signal: AbortSignal.timeout(30_000),
   });
 
   if (!res.ok) {

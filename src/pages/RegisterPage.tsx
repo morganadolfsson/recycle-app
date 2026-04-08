@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
+import { getErrorStatus } from '../lib/errors';
 
 export default function RegisterPage() {
   const { t } = useTranslation();
@@ -21,8 +22,7 @@ export default function RegisterPage() {
       await register(email, password);
       navigate('/');
     } catch (err: unknown) {
-      const status = (err as { status?: number }).status;
-      setError(status === 409 ? t('auth.errors.emailTaken') : t('auth.errors.generic'));
+      setError(getErrorStatus(err) === 409 ? t('auth.errors.emailTaken') : t('auth.errors.generic'));
     } finally {
       setLoading(false);
     }
@@ -33,9 +33,10 @@ export default function RegisterPage() {
       <div className="auth-card">
         <h1>{t('auth.registerTitle')}</h1>
         <form onSubmit={handleSubmit}>
-          <label>
+          <label htmlFor="reg-email">
             {t('auth.email')}
             <input
+              id="reg-email"
               type="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
@@ -43,9 +44,10 @@ export default function RegisterPage() {
               autoComplete="email"
             />
           </label>
-          <label>
+          <label htmlFor="reg-password">
             {t('auth.password')}
             <input
+              id="reg-password"
               type="password"
               value={password}
               onChange={e => setPassword(e.target.value)}

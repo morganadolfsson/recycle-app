@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { applicationsApi } from '../lib/api';
 import { useAuth } from '../contexts/AuthContext';
+import { getErrorStatus } from '../lib/errors';
 
 export default function ApplyPage() {
   const { t } = useTranslation();
@@ -38,8 +39,7 @@ export default function ApplyPage() {
       await applicationsApi.submit({ name, organization, message });
       setSubmitted(true);
     } catch (err: unknown) {
-      const status = (err as { status?: number }).status;
-      if (status === 409) {
+      if (getErrorStatus(err) === 409) {
         setError(t('apply.pending'));
       } else {
         setError(t('common.error'));
@@ -54,9 +54,10 @@ export default function ApplyPage() {
       <h1>{t('apply.title')}</h1>
       <p className="description">{t('apply.description')}</p>
       <form onSubmit={handleSubmit} className="form">
-        <label>
+        <label htmlFor="apply-name">
           {t('apply.name')}
           <input
+            id="apply-name"
             type="text"
             value={name}
             onChange={e => setName(e.target.value)}
@@ -64,18 +65,20 @@ export default function ApplyPage() {
             maxLength={100}
           />
         </label>
-        <label>
+        <label htmlFor="apply-org">
           {t('apply.organization')}
           <input
+            id="apply-org"
             type="text"
             value={organization}
             onChange={e => setOrganization(e.target.value)}
             maxLength={100}
           />
         </label>
-        <label>
+        <label htmlFor="apply-msg">
           {t('apply.message')}
           <textarea
+            id="apply-msg"
             value={message}
             onChange={e => setMessage(e.target.value)}
             rows={4}

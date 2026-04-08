@@ -39,7 +39,7 @@ export default function Navbar() {
             <Link to="/register">{t('nav.register')}</Link>
           </>
         )}
-        <button onClick={toggleLang} className="btn-lang">
+        <button onClick={toggleLang} className="btn-lang" aria-label="Toggle language">
           {i18n.language === 'en' ? 'SV' : 'EN'}
         </button>
       </div>
