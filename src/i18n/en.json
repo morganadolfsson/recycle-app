@@ -1,0 +1,127 @@
+{
+  "app": {
+    "title": "Pantaround",
+    "tagline": "Share your recycling, help your community"
+  },
+  "nav": {
+    "home": "Home",
+    "myDonations": "My Donations",
+    "stats": "My Impact",
+    "admin": "Admin",
+    "logout": "Log out",
+    "login": "Log in",
+    "register": "Sign up"
+  },
+  "auth": {
+    "email": "Email address",
+    "password": "Password",
+    "alias": "Username (shown publicly)",
+    "loginTitle": "Welcome back",
+    "registerTitle": "Create an account",
+    "loginButton": "Log in",
+    "registerButton": "Create account",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "signUpLink": "Sign up",
+    "loginLink": "Log in",
+    "errors": {
+      "invalidCredentials": "Incorrect email or password",
+      "emailTaken": "An account with this email already exists",
+      "generic": "Something went wrong. Please try again."
+    }
+  },
+  "posts": {
+    "title": "Available pickups",
+    "empty": "No pickups available right now",
+    "emptyNearby": "No pickups near you right now",
+    "createTitle": "Post recycling for pickup",
+    "items": "Items",
+    "addItem": "Add item type",
+    "estimatedValue": "Estimated value",
+    "meetingPoint": "Meeting point",
+    "meetingInstructions": "Instructions for collector (optional)",
+    "meetingInstructionsHint": "e.g. 'Bags by the front gate', 'Ring bell on arrival'",
+    "timeWindow": "Available for pickup",
+    "from": "From",
+    "to": "To",
+    "submit": "Post donation",
+    "submitSuccess": "Your donation has been posted!",
+    "claimButton": "Claim this pickup",
+    "claimedBy": "Claimed",
+    "completedLabel": "Completed",
+    "status": {
+      "open": "Available",
+      "claimed": "Claimed",
+      "completed": "Collected"
+    },
+    "filters": {
+      "all": "All",
+      "today": "Today",
+      "week": "This week",
+      "nearMe": "Near me"
+    },
+    "itemTypes": {
+      "can": "Aluminium cans",
+      "pet_small": "Small PET bottles (≤1L)",
+      "pet_large": "Large PET bottles (>1L)",
+      "glass_small": "Small glass bottles",
+      "glass_large": "Large glass bottles"
+    }
+  },
+  "apply": {
+    "title": "Apply to become a collector",
+    "description": "Collectors pick up recycling from donors and return it for pant money. Applications are reviewed manually.",
+    "name": "Your full name",
+    "organization": "Organization (optional)",
+    "message": "Why do you want to become a collector?",
+    "submit": "Submit application",
+    "pending": "Your application is pending review",
+    "approved": "You are an approved collector",
+    "success": "Application submitted! We'll review it soon."
+  },
+  "stats": {
+    "title": "Your impact",
+    "totalSEK": "Estimated value donated",
+    "totalItems": "Items donated",
+    "postCount": "Donations posted",
+    "badges": "Badges earned",
+    "badgeNames": {
+      "first_donation": "First Donation",
+      "regular_donor": "Regular Donor",
+      "dedicated_donor": "Dedicated Donor",
+      "100kr_club": "100kr Club",
+      "500kr_club": "500kr Club",
+      "1000kr_hero": "Community Hero"
+    }
+  },
+  "admin": {
+    "title": "Admin Panel",
+    "applications": "Collector Applications",
+    "noApplications": "No pending applications",
+    "approve": "Approve",
+    "reject": "Reject",
+    "stats": "Platform Stats",
+    "totalPosts": "Total posts",
+    "openPosts": "Open",
+    "completedPosts": "Completed",
+    "totalUsers": "Users",
+    "collectors": "Collectors",
+    "pendingApplications": "Pending applications",
+    "totalSEK": "Total SEK generated"
+  },
+  "alerts": {
+    "title": "Pickups near you",
+    "count": "{{count}} available today",
+    "none": "No pickups near you today"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "retry": "Try again",
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close",
+    "kr": "kr",
+    "km": "km"
+  }
+}

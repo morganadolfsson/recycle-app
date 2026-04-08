@@ -1,0 +1,127 @@
+{
+  "app": {
+    "title": "Pantaround",
+    "tagline": "Dela ditt pant, hjälp din gemenskap"
+  },
+  "nav": {
+    "home": "Hem",
+    "myDonations": "Mina donationer",
+    "stats": "Min påverkan",
+    "admin": "Admin",
+    "logout": "Logga ut",
+    "login": "Logga in",
+    "register": "Registrera"
+  },
+  "auth": {
+    "email": "E-postadress",
+    "password": "Lösenord",
+    "alias": "Användarnamn (visas publikt)",
+    "loginTitle": "Välkommen tillbaka",
+    "registerTitle": "Skapa ett konto",
+    "loginButton": "Logga in",
+    "registerButton": "Skapa konto",
+    "noAccount": "Har du inget konto?",
+    "hasAccount": "Har du redan ett konto?",
+    "signUpLink": "Registrera dig",
+    "loginLink": "Logga in",
+    "errors": {
+      "invalidCredentials": "Fel e-post eller lösenord",
+      "emailTaken": "Ett konto med denna e-post finns redan",
+      "generic": "Något gick fel. Försök igen."
+    }
+  },
+  "posts": {
+    "title": "Tillgängliga upphämtningar",
+    "empty": "Inga upphämtningar tillgängliga just nu",
+    "emptyNearby": "Inga upphämtningar nära dig just nu",
+    "createTitle": "Posta pant för upphämtning",
+    "items": "Föremål",
+    "addItem": "Lägg till panttyp",
+    "estimatedValue": "Uppskattat värde",
+    "meetingPoint": "Mötesplats",
+    "meetingInstructions": "Instruktioner för samlaren (valfritt)",
+    "meetingInstructionsHint": "t.ex. 'Påsar vid grinden', 'Ring på vid ankomst'",
+    "timeWindow": "Tillgänglig för upphämtning",
+    "from": "Från",
+    "to": "Till",
+    "submit": "Posta donation",
+    "submitSuccess": "Din donation har publicerats!",
+    "claimButton": "Hämta denna upphämtning",
+    "claimedBy": "Reserverad",
+    "completedLabel": "Slutförd",
+    "status": {
+      "open": "Tillgänglig",
+      "claimed": "Reserverad",
+      "completed": "Hämtad"
+    },
+    "filters": {
+      "all": "Alla",
+      "today": "Idag",
+      "week": "Denna vecka",
+      "nearMe": "Nära mig"
+    },
+    "itemTypes": {
+      "can": "Aluminiumburkar",
+      "pet_small": "Små PET-flaskor (≤1L)",
+      "pet_large": "Stora PET-flaskor (>1L)",
+      "glass_small": "Små glasflaskor",
+      "glass_large": "Stora glasflaskor"
+    }
+  },
+  "apply": {
+    "title": "Ansök om att bli samlare",
+    "description": "Samlare hämtar pant från donatorer och lämnar in det. Ansökningar granskas manuellt.",
+    "name": "Ditt fullständiga namn",
+    "organization": "Organisation (valfritt)",
+    "message": "Varför vill du bli samlare?",
+    "submit": "Skicka ansökan",
+    "pending": "Din ansökan väntar på granskning",
+    "approved": "Du är en godkänd samlare",
+    "success": "Ansökan skickad! Vi granskar den snart."
+  },
+  "stats": {
+    "title": "Din påverkan",
+    "totalSEK": "Uppskattat donerat värde",
+    "totalItems": "Donerade föremål",
+    "postCount": "Publicerade donationer",
+    "badges": "Intjänade märken",
+    "badgeNames": {
+      "first_donation": "Första donationen",
+      "regular_donor": "Regelbunden donator",
+      "dedicated_donor": "Hängiven donator",
+      "100kr_club": "100kr-klubben",
+      "500kr_club": "500kr-klubben",
+      "1000kr_hero": "Gemenskapens hjälte"
+    }
+  },
+  "admin": {
+    "title": "Adminpanel",
+    "applications": "Samlarsansökningar",
+    "noApplications": "Inga väntande ansökningar",
+    "approve": "Godkänn",
+    "reject": "Avvisa",
+    "stats": "Plattformsstatistik",
+    "totalPosts": "Totalt antal poster",
+    "openPosts": "Öppna",
+    "completedPosts": "Slutförda",
+    "totalUsers": "Användare",
+    "collectors": "Samlare",
+    "pendingApplications": "Väntande ansökningar",
+    "totalSEK": "Totalt genererade SEK"
+  },
+  "alerts": {
+    "title": "Upphämtningar nära dig",
+    "count": "{{count}} tillgängliga idag",
+    "none": "Inga upphämtningar nära dig idag"
+  },
+  "common": {
+    "loading": "Laddar...",
+    "error": "Något gick fel",
+    "retry": "Försök igen",
+    "save": "Spara",
+    "cancel": "Avbryt",
+    "close": "Stäng",
+    "kr": "kr",
+    "km": "km"
+  }
+}
