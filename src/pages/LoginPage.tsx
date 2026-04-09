@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { getErrorStatus } from '../lib/errors';
@@ -60,10 +60,6 @@ export default function LoginPage() {
             {loading ? t('common.loading') : t('auth.loginButton')}
           </button>
         </form>
-        <p>
-          {t('auth.noAccount')}{' '}
-          <Link to="/register">{t('auth.signUpLink')}</Link>
-        </p>
       </div>
     </div>
   );

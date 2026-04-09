@@ -3,7 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 
 interface Props {
   children: React.ReactNode;
-  roles?: Array<'donor' | 'collector' | 'admin'>;
+  roles?: Array<'donor' | 'caretaker' | 'admin'>;
 }
 
 export default function ProtectedRoute({ children, roles }: Props) {

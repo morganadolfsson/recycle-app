@@ -199,61 +199,322 @@ Auth routes (`/auth/*`) are public — provided by `codehooks-auth`.
 |-------|--------|-------|
 | Phase 1 — Foundation (Backend) | ✅ Complete | codehooks API deployed, auth configured, all routes live |
 | Phase 2 — Core Frontend | ✅ Complete | i18n (EN/SV), AuthContext, API client, Login/Register/Apply pages, Navbar, routing |
-| Phase 3 — Collector Experience | ⬜ Pending | Map view, claim flow, alert widget |
-| Phase 4 — Admin + Applications | ⬜ Pending | Approval UI, collector application form |
-| Phase 5 — Donor Dashboard + Gamification | ⬜ Pending | Stats, badges, history |
-| Phase 6 — Polish + Deploy | ⬜ Pending | Responsive, Vercel domain, error states |
+| Phase 3 — Collector Experience | ✅ Complete | Mapbox map, PostCard, claim/complete flow, AlertWidget, CreatePostPage |
+| Phase 4 — Admin + Applications | ✅ Complete | AdminPage: stats dashboard, application list with filter/approve/reject |
+| Phase 5 — Donor Dashboard + Gamification | ✅ Complete | MyDonationsPage (post history), StatsPage (impact + badges) |
+| Phase 6 — Polish + Deploy | ✅ Complete | Lazy-loading, mobile nav, 404 page, ErrorBlock, Vercel SPA config |
+| Phase 7 — Auth Redesign | ✅ Complete | Custom password auth, removed registration, admin creates users, change password page |
+| Phase 8 — Beneficiary Platform | ✅ Complete | Beneficiary profiles, favorites, per-person gamification, messages, caretaker management |
+| Phase 9 — Caretaker & Donor UX | ✅ Complete | Role-based home, claim→complete flow, message likes/replies, activity feed, pickup-targeted messages |
 
 ---
 
-## Frontend Structure (Phase 2 starting point)
+## Phase 8: Beneficiary-Centered Platform Redesign
 
+### Vision
+Transform from generic recycling pickup app into a **personal connection platform** where donors donate to specific people in need (beneficiaries), managed by caretaker organizations.
+
+### Roles
+| Role | Who | Key actions |
+|------|-----|-------------|
+| `donor` | Public recycling donors | Post recycling (targeted or general), browse beneficiaries, favorite, per-person stats, receive messages |
+| `caretaker` | Org staff — was "collector" | Register beneficiaries, claim pickups, assign donations, post messages on behalf |
+| `admin` | morganadolfsson | Manage everything (later sprint) |
+| beneficiary | NOT a login user — profile managed by caretakers | Pensioners/people in need |
+
+### New Collections
+- `beneficiaries` — { name, bio, photoUrl?, caretakerId, organizationName, totalReceivedSEK, supporterCount, isActive, createdAt }
+- `favorites` — { donorId, beneficiaryId, createdAt }
+- `donation_logs` — { postId, donorId, caretakerId, beneficiaryId, amountSEK, items, createdAt }
+- `donor_beneficiary_stats` — { donorId, beneficiaryId, totalSEK, donationCount, level (1-5), updatedAt }
+- `messages` — { beneficiaryId, caretakerId, donorId? (null=public), text, photoUrl?, createdAt }
+- Modified `posts` — added: targetBeneficiaryId, assignedBeneficiaryId
+
+### Sprint Plan (all complete)
+| Sprint | Scope | Status |
+|--------|-------|--------|
+| 0 | Bug fixes: map size (65vh), error states, collector→caretaker rename | ✅ |
+| 1 | Backend: new collections + all new API endpoints, deployed | ✅ |
+| 2-3 | Frontend API types + new components | ✅ |
+| 4-5 | New pages + modify existing pages | ✅ |
+| 6 | i18n keys (EN/SV) + CSS + code review fixes | ✅ |
+
+### Code Review Fixes Applied
+- StatCard reused in BeneficiaryProfilePage (was duplicating markup)
+- Removed redundant `completingId` state in HomePage (derived from `completingPost`)
+- Backend: parallelized writes in post completion (`Promise.all`)
+- Backend: eliminated double haversine computation in post listing
+- Removed unnecessary comment in LevelBadge
+
+### Test Accounts
+| Role | Email | Password |
+|------|-------|----------|
+| Donor | test@test.com | test |
+| Admin | morgan.adolfsson44@gmail.com | admin |
+| Caretaker | caretaker@test.com | test |
+
+### Test Beneficiaries (pre-seeded)
+- Sven Eriksson — "Retired teacher from Malmö"
+- Ingrid Lindqvist — "85-year-old grandmother, former nurse"
+
+### Auth Notes
+- Custom JWT auth (not codehooks-auth) — 7-day tokens
+- Frontend uses `x-access-token` header (not `Authorization`) to avoid codehooks platform conflict
+- Frontend also sends `x-apikey` header for codehooks platform auth
+- API key: `[REDACTED-API-KEY]` (stored in `VITE_API_KEY`)
+- Seed endpoint: `POST /auth/seed` with secret `[REDACTED-SEED-SECRET]`
+
+### Frontend Structure (Phase 8 — current)
 ```
-recycle app/
-├── src/
-│   ├── components/     # Shared UI components
-│   ├── hooks/          # Custom React hooks
-│   ├── lib/            # API client, utilities
-│   ├── App.tsx
-│   └── main.tsx
-├── CONTEXT.md          # ← this file
-├── .env.example        # VITE_API_URL, VITE_APP_TITLE
-└── package.json
+src/
+├── components/
+│   ├── AlertWidget.tsx         # Caretaker nearby-post count
+│   ├── BeneficiaryCard.tsx     # Photo/initials, name, bio, stats, favorite heart, level
+│   ├── BeneficiarySelector.tsx # Dropdown for selecting beneficiary (create post + completion)
+│   ├── ClaimModal.tsx          # Modal: caretaker claims post + assigns beneficiary
+│   ├── CompletionModal.tsx     # Modal: caretaker selects beneficiary on pickup completion
+│   ├── ErrorBlock.tsx          # Error + retry button
+│   ├── LevelBadge.tsx          # 1-5 star visual level indicator
+│   ├── MessageCard.tsx         # Thank-you message display
+│   ├── Navbar.tsx              # Role-aware nav, hamburger mobile menu
+│   ├── PostCard.tsx            # Post summary with claim/complete
+│   ├── PostMap.tsx             # Mapbox GL map (markers, pin-drop)
+│   ├── ProtectedRoute.tsx      # Auth + role guard
+│   └── StatCard.tsx            # Reusable stat display card
+├── pages/
+│   ├── AdminPage.tsx           # Platform stats + application management
+│   ├── ApplyPage.tsx           # Caretaker application form
+│   ├── BeneficiariesPage.tsx   # Browse all beneficiaries, search, favorite
+│   ├── BeneficiaryProfilePage.tsx # Single profile: bio, stats, messages, donor connection
+│   ├── CaretakerBeneficiariesPage.tsx # Manage beneficiaries, register new, post messages
+│   ├── ChangePasswordPage.tsx  # Change own password
+│   ├── CreatePostPage.tsx      # Item picker, pin-drop, optional beneficiary target
+│   ├── DonorDashboardPage.tsx  # Connections, messages, favorites
+│   ├── HomePage.tsx            # Map + list, filters, claim, completion modal
+│   ├── LoginPage.tsx           # Email/password login (no registration)
+│   ├── MyDonationsPage.tsx     # Donor post history
+│   ├── NotFoundPage.tsx        # 404
+│   └── StatsPage.tsx           # Impact stats + badges
+├── contexts/AuthContext.tsx     # User state, login, logout
+├── lib/
+│   ├── api.ts                  # All API types + endpoints
+│   ├── errors.ts               # Error status helper
+│   └── formatters.ts           # Shared formatItemSummary, formatTimeRange
+├── i18n/ (en.json, sv.json)    # ~200 translation keys
+├── App.tsx                     # Routes + lazy loading
+├── App.css                     # All component styles
+└── index.css                   # CSS variables (light/dark)
 ```
 
-### Phase 2 complete — structure now:
+### API Endpoints (Phase 8 — current)
+**Public**: POST /auth/login, POST /auth/seed, GET /pant-prices
+**Protected** (x-access-token + x-apikey):
+- Posts: GET/POST /api/posts, GET /api/posts/:id, POST /api/posts/:id/claim, POST /api/posts/:id/complete
+- Donor: GET /api/my/posts, GET /api/my/stats, PATCH /api/my/profile, PATCH /api/my/password, PATCH /api/my/location
+- Donor-beneficiary: GET /api/my/favorites, GET /api/my/beneficiary-stats, GET /api/my/messages
+- Favorites: POST /api/favorites, DELETE /api/favorites/:beneficiaryId
+- Beneficiaries: GET/POST /api/beneficiaries, GET/PATCH /api/beneficiaries/:id, GET /api/beneficiaries/:id/messages
+- Messages: POST /api/messages
+- Alerts: GET /api/alerts (caretaker)
+- Applications: POST /api/applications, GET/PUT /api/admin/applications/:id
+- Admin: GET /api/admin/stats, POST /api/admin/users
+
+### What's Next
+- **Phase 10: Admin Panel** — see detailed plan below
+- **CreatePostPage** — integrate BeneficiarySelector for targeted donations
+- **Notifications** — push/email when donation assigned or message received
+- **Photo upload** — actual file upload endpoint (currently data URLs, 2MB limit)
+- **Backend query optimization** — activity endpoint does full table scans on message_likes/users
+- **Vercel deployment** — connect domain, deploy frontend
+- **Commit + push** — all Phase 9 changes are uncommitted
+
+---
+
+## Phase 9: Caretaker & Donor UX (2026-04-08)
+
+### Overview
+Complete rework of both donor and caretaker experiences. Donors see a donation-centric home; caretakers get a streamlined claim→complete→message flow. Full message interaction system (likes, replies, activity feed) connects the two roles.
+
+### Donor Experience
+- **Home page** (`/`) shows "My Donations" — list of all posts with status badges (waiting/accepted/completed + beneficiary name)
+- **Click any donation** → expands inline to show messages, with like/reply
+- **Nav**: Home, Post Recycling, Beneficiaries, My Impact
+- No map page for donors — that's caretaker-only
+
+### Caretaker Experience
+- **Home page** (`/`) shows map + available pickups (unchanged)
+- **Claim flow**: Click pickup → ClaimModal with beneficiary selector → claim → "Mark as collected" auto-completes with the pre-selected beneficiary (no second selection)
+- **My Beneficiaries** page:
+  - Click beneficiary → expandable detail with **Overview** and **Edit** tabs
+  - **Overview**: Stats grid (SEK received, supporters, active status), bio, registration date
+  - **Messages section**: Compose form with **pickup dropdown** (select which pickup/donor to address), message list with inline replies
+  - **Donor activity feed**: Always visible — shows likes and replies from donors
+  - **Edit tab**: Name, bio, photo (file picker with 2MB limit + preview)
+
+### Message System
+- **Backend collections**: `messages` (now with `postId`, `donorAlias`), `message_likes`, `message_replies`
+- **Donor can**: Like messages (heart toggle), reply to messages (inline form)
+- **Caretaker can**: Post messages tied to specific pickups/donors, see all donor likes/replies in activity feed, see replies threaded under each message
+
+### Backend Endpoints Added (recycle-backend/index.js)
+| Method | Route | Role | Description |
+|--------|-------|------|-------------|
+| POST | `/api/messages/:id/like` | any | Like a message |
+| DELETE | `/api/messages/:id/like` | any | Unlike a message |
+| GET | `/api/my/liked-messages` | any | Get IDs of liked messages |
+| POST | `/api/messages/:id/reply` | any | Reply to a message |
+| GET | `/api/messages/:id/replies` | any | Get replies for a message |
+| GET | `/api/beneficiaries/:id/activity` | caretaker | Likes + replies for beneficiary's messages |
+| GET | `/api/my/pickups` | caretaker | Posts claimed/completed by this caretaker |
+
+### Backend Schema Changes
+- `messages`: added `postId` (string|null), `donorAlias` (string|null)
+- `message_likes`: { messageId, userId, createdAt }
+- `message_replies`: { messageId, beneficiaryId, userId, userAlias, userRole, text, createdAt }
+
+### New Frontend Files
+- `src/components/ClaimModal.tsx` — Post detail + beneficiary selector for claiming
+- `src/pages/MessagesPage.tsx` — Standalone messages page (kept as route, not in nav)
+- `src/lib/formatters.ts` — Shared `formatItemSummary`, `formatTimeRange`
+
+### Key Frontend Changes
+- `src/App.tsx` — Role-based home: donors → MyDonationsPage, caretakers → HomePage
+- `src/pages/MyDonationsPage.tsx` — Expandable donation rows with inline messages, like/reply
+- `src/pages/HomePage.tsx` — preSelectedBeneficiary carry-through, auto-complete on mark collected
+- `src/pages/CaretakerBeneficiariesPage.tsx` — Tabbed detail (overview/edit), pickup dropdown in message compose, activity feed, replies on messages
+- `src/components/MessageCard.tsx` — Like button, reply form, inline replies, donorAlias display
+- `src/components/Navbar.tsx` — Role-specific nav links
+- `src/lib/api.ts` — `caretakerApi.myPickups`, `messagesApi.like/unlike/myLiked/reply/replies`, `activityApi.forBeneficiary`, `MessageReply`, `ActivityItem` types
+
+### Code Review Fixes Applied (2 rounds)
+- Removed redundant `photoPreview` state; added file size guard + FileReader error handler
+- Consolidated duplicate beneficiary API calls; memoized lookup map
+- Derived `claimingPost` from existing state instead of separate variable
+- Extracted shared formatters to eliminate PostCard/ClaimModal duplication
+- Added try/catch on all async handlers (toggleLike, handleReply, handleCreate, toggleActive, handleSendMessage)
+- Added .catch() per-reply fetch to prevent unhandled rejections
+- Clear `preSelectedBeneficiary` after completion
+
+### Sprint 3: Donor Home + Message Integration (2026-04-09)
+- **Donor home is now "My Donations"** — donors see `/` as their donation list (not the map). Role-based routing via `DonorOrCaretakerHome` wrapper in App.tsx
+- **Expandable donation rows** — click any donation to see messages inline with like/reply (no separate Messages page needed)
+- **Caretaker message compose** — pickup dropdown uses `GET /api/my/pickups` (new endpoint) to list completed pickups for the beneficiary, with donor alias + amount + date
+- **Backend**: Added `GET /api/my/pickups` (caretaker) — returns all posts claimed by this caretaker
+- **Backend**: Messages now store `postId` and `donorAlias` fields; backend looks up donor alias on message creation
+- **Caretaker activity feed** — always visible (shows empty state when no activity); messages show inline replies from donors
+- **UI fix**: Caretaker beneficiary cards now use consistent flexbox layout (`flex: 1`, explicit `line-height`) so all cards align regardless of bio length
+
+---
+
+## Phase 10: Admin Panel (Next Session)
+
+### Current State
+The admin panel (`/admin`, login: `morgan.adolfsson44@gmail.com` / `admin`) currently has:
+- Platform stats dashboard (total posts, users, caretakers, SEK, etc.)
+- Caretaker application list with approve/reject
+- `POST /api/admin/users` endpoint exists (creates donor or caretaker accounts)
+
+### What's Missing
+The admin needs a complete management interface to:
+1. **Create caretaker accounts** — form to create users with role=caretaker (endpoint exists, no UI)
+2. **Create donor accounts** — same form with role=donor
+3. **List and manage all users** — view all users, edit roles, deactivate accounts
+4. **View all beneficiaries** — see every beneficiary across all caretakers, with stats
+5. **Manage beneficiaries** — edit/deactivate any beneficiary (not just own)
+6. **View all posts** — see all donations with status, filter by status/date
+7. **View all messages** — see message flow between donors and beneficiaries
+
+### Proposed Implementation Plan
+
+#### Backend Endpoints Needed
+| Method | Route | Description |
+|--------|-------|-------------|
+| GET | `/api/admin/users` | List all users (with role filter) |
+| PATCH | `/api/admin/users/:id` | Update user role, deactivate |
+| DELETE | `/api/admin/users/:id` | Delete user account |
+| GET | `/api/admin/beneficiaries` | List all beneficiaries across caretakers |
+| PATCH | `/api/admin/beneficiaries/:id` | Edit any beneficiary |
+| GET | `/api/admin/posts` | List all posts (with status/date filters) |
+| GET | `/api/admin/messages` | List all messages |
+
+#### Frontend: AdminPage Redesign
+Tabbed layout replacing the current single-page view:
+
+| Tab | Content |
+|-----|---------|
+| **Overview** | Stats dashboard (existing, keep as-is) |
+| **Users** | User table with role badges, create user form, edit/deactivate actions |
+| **Caretakers** | Filtered view of caretaker users + their beneficiaries + application status |
+| **Beneficiaries** | All beneficiaries across orgs, with stats, search, edit |
+| **Posts** | All donations with status filter, donor/beneficiary info |
+| **Messages** | Full message log with sender/recipient info |
+
+#### Sprint Plan
+| Sprint | Scope |
+|--------|-------|
+| 1 | Backend: all admin endpoints + frontend: tab shell + Users tab with create/list |
+| 2 | Caretakers tab (user list + their beneficiaries) + Beneficiaries tab |
+| 3 | Posts tab + Messages tab |
+| 4 | Polish: search, pagination, bulk actions |
+
+---
+
+## Frontend Structure (Phase 5 — current)
+
 ```
 src/
 ├── i18n/
-│   ├── en.json         # English translations
-│   ├── sv.json         # Swedish translations
-│   └── index.ts        # i18next init (persists lang to localStorage)
+│   ├── en.json              # English translations (all phases)
+│   ├── sv.json              # Swedish translations (all phases)
+│   └── index.ts             # i18next init (persists lang to localStorage)
 ├── contexts/
-│   └── AuthContext.tsx # user, login, register, logout — persists to localStorage
+│   └── AuthContext.tsx       # user, login, register, logout — persists to localStorage
 ├── components/
-│   ├── Navbar.tsx      # Lang toggle (EN/SV), role-aware nav links
-│   └── ProtectedRoute.tsx  # Redirects to /login if unauthenticated
+│   ├── Navbar.tsx            # Lang toggle, role-aware nav links (donor: Post Recycling)
+│   ├── ProtectedRoute.tsx    # Redirects to /login if unauthenticated, optional role guard
+│   ├── PostCard.tsx          # Post summary: items, SEK, status badge, claim/complete buttons
+│   ├── PostMap.tsx           # Mapbox GL map — markers (green/red), pin-drop mode, ARIA
+│   └── AlertWidget.tsx       # Collector nearby-post count badge (fetches /api/alerts)
 ├── pages/
-│   ├── LoginPage.tsx
-│   ├── RegisterPage.tsx
-│   └── ApplyPage.tsx   # Collector application form (role-aware)
+│   ├── LoginPage.tsx         # Email/password login
+│   ├── RegisterPage.tsx      # Email/password register
+│   ├── ApplyPage.tsx         # Collector application form (role-aware)
+│   ├── HomePage.tsx          # Map + list view, period filters, claim/complete flow
+│   ├── CreatePostPage.tsx    # Item picker, Mapbox pin-drop, time window, instructions
+│   ├── AdminPage.tsx         # Stats grid, application list, status filter, approve/reject
+│   ├── MyDonationsPage.tsx   # Donor post history (reuses PostCard, read-only)
+│   └── StatsPage.tsx         # Impact stats grid + badge cards (earned/locked)
 ├── lib/
-│   └── api.ts          # Typed fetch client for all endpoints
-├── App.tsx             # BrowserRouter + all routes
-├── App.css             # Base styles (green accent, auth cards, forms)
-└── index.css           # CSS variables (green theme)
+│   └── api.ts               # Typed fetch client for all endpoints
+├── App.tsx                   # BrowserRouter + all routes
+├── App.css                   # All component styles + responsive breakpoints
+└── index.css                 # CSS variables (green theme, light/dark)
 ```
 
-### Phase 3 will add:
+### Code review (Phases 3–5) — fixes applied:
+- **XSS**: PostMap popup switched from `setHTML` to `setText`
+- **Validation**: CreatePostPage enforces start < end and future-time checks
+- **Bug**: Admin "All" filter now correctly passes no status param
+- **Perf**: Removed `t` from useEffect deps to prevent refetch on lang change
+- **A11y**: Focus-visible on PostCard, ARIA role/label on map container
+
+### Phase 6 complete — additions:
 ```
 src/pages/
-├── HomePage.tsx        # Map view + list view of posts, filters, alert widget
-└── CreatePostPage.tsx  # Donor post creation form with Mapbox pin drop
+└── NotFoundPage.tsx    # 404 page with link home
 src/components/
-├── PostCard.tsx        # Post summary card
-├── PostMap.tsx         # Mapbox map component
-└── AlertWidget.tsx     # Collector alert count widget
+└── ErrorBlock.tsx      # Reusable error-with-retry block
+vercel.json             # SPA rewrite rules for Vercel deployment
 ```
+
+### Phase 6 changes:
+- **Code splitting**: All pages lazy-loaded via React.lazy + Suspense
+  - Main bundle: 75kb gzipped (was 566kb)
+  - Mapbox chunk: 469kb gzipped, loaded only on map pages
+- **Mobile nav**: Hamburger toggle, full-width dropdown menu at <=768px
+- **404 page**: Replaces catch-all Navigate, proper not-found UX
+- **ErrorBlock**: Used in HomePage and AdminPage with retry button
+- **Vercel config**: SPA rewrites for client-side routing
 
 ---
 
@@ -263,7 +524,7 @@ src/components/
 ```
 VITE_API_URL=https://recycleapp-8740.api.codehooks.io/dev
 VITE_APP_TITLE=Pantaround
-VITE_MAPBOX_TOKEN=       # needed for Phase 3
+VITE_MAPBOX_TOKEN=pk.eyJ1... # Mapbox GL token (set in Phase 3)
 ```
 
 ### Backend (set via `coho set-env`)

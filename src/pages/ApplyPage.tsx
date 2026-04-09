@@ -15,7 +15,7 @@ export default function ApplyPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  if (user?.role === 'collector') {
+  if (user?.role === 'caretaker') {
     return (
       <div className="page">
         <p className="success-msg">{t('apply.approved')}</p>
