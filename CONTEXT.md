@@ -206,6 +206,7 @@ Auth routes (`/auth/*`) are public — provided by `codehooks-auth`.
 | Phase 7 — Auth Redesign | ✅ Complete | Custom password auth, removed registration, admin creates users, change password page |
 | Phase 8 — Beneficiary Platform | ✅ Complete | Beneficiary profiles, favorites, per-person gamification, messages, caretaker management |
 | Phase 9 — Caretaker & Donor UX | ✅ Complete | Role-based home, claim→complete flow, message likes/replies, activity feed, pickup-targeted messages |
+| Phase 10 — Admin Panel + Polish | ✅ Complete | Tabbed admin (users/apps/beneficiaries/posts/messages), create accounts, map search, donor-targeted messages from claim modal |
 
 ---
 
@@ -406,56 +407,54 @@ Complete rework of both donor and caretaker experiences. Donors see a donation-c
 
 ---
 
-## Phase 10: Admin Panel (Next Session)
+## Phase 10: Admin Panel + Polish (2026-04-09)
 
-### Current State
-The admin panel (`/admin`, login: `morgan.adolfsson44@gmail.com` / `admin`) currently has:
-- Platform stats dashboard (total posts, users, caretakers, SEK, etc.)
-- Caretaker application list with approve/reject
-- `POST /api/admin/users` endpoint exists (creates donor or caretaker accounts)
+### Admin Panel — Complete
+Tabbed admin interface at `/admin` (login: `morgan.adolfsson44@gmail.com` / `admin`):
 
-### What's Missing
-The admin needs a complete management interface to:
-1. **Create caretaker accounts** — form to create users with role=caretaker (endpoint exists, no UI)
-2. **Create donor accounts** — same form with role=donor
-3. **List and manage all users** — view all users, edit roles, deactivate accounts
-4. **View all beneficiaries** — see every beneficiary across all caretakers, with stats
-5. **Manage beneficiaries** — edit/deactivate any beneficiary (not just own)
-6. **View all posts** — see all donations with status, filter by status/date
-7. **View all messages** — see message flow between donors and beneficiaries
+| Tab | Features |
+|-----|----------|
+| **Overview** | Platform stats dashboard (posts, users, caretakers, SEK) |
+| **Users** | List all users with role badges + filter by role. Create new donor/caretaker accounts. Inline role editing. |
+| **Applications** | Caretaker application list with approve/reject, status filter |
+| **Beneficiaries** | All beneficiaries across all caretakers. Inline edit name/bio. Activate/deactivate. Error handling + retry. |
+| **Posts** | All donations with status filter (open/claimed/completed), donor info, item summary |
+| **Messages** | Full message log with beneficiary name, donor alias, date |
 
-### Proposed Implementation Plan
-
-#### Backend Endpoints Needed
+### Backend Endpoints Added
 | Method | Route | Description |
 |--------|-------|-------------|
-| GET | `/api/admin/users` | List all users (with role filter) |
-| PATCH | `/api/admin/users/:id` | Update user role, deactivate |
-| DELETE | `/api/admin/users/:id` | Delete user account |
-| GET | `/api/admin/beneficiaries` | List all beneficiaries across caretakers |
-| PATCH | `/api/admin/beneficiaries/:id` | Edit any beneficiary |
-| GET | `/api/admin/posts` | List all posts (with status/date filters) |
-| GET | `/api/admin/messages` | List all messages |
+| GET | `/api/admin/users` | List all users (optional `?role=` filter) |
+| PATCH | `/api/admin/users/:id` | Update user role/alias/displayName |
+| GET | `/api/admin/beneficiaries` | List all beneficiaries |
+| PATCH | `/api/admin/beneficiaries/:id` | Edit any beneficiary (name/bio/photo/isActive) |
+| GET | `/api/admin/posts` | List all posts (optional `?status=` filter) |
+| GET | `/api/admin/messages` | List all messages with beneficiary names |
+| GET | `/api/my/pickups` | Caretaker: posts they claimed/completed |
 
-#### Frontend: AdminPage Redesign
-Tabbed layout replacing the current single-page view:
+### Other Changes
+- **Map geocoding search** — PostMap has address/zip code search bar (Mapbox Geocoding API). Flies to location and drops pin.
+- **Map wider** — 3:1 grid ratio (75% map, 25% list)
+- **Map ResizeObserver** — auto-resizes when container changes
+- **CreatePostPage** — favorites dropdown for targeting a beneficiary; date + time range picker (instead of two datetime-local inputs)
+- **ClaimModal** — shows meeting instructions; "Message donor" section to send a note tied to the pickup
+- **Caretaker sees meeting details** — backend `maskPost` updated to reveal meetingPoint/meetingInstructions to caretakers on open posts
+- **Backend fix**: `updateDonorStats` and `/api/my/stats` now handle missing `donor_stats` records (`.catch(() => null)`)
 
-| Tab | Content |
-|-----|---------|
-| **Overview** | Stats dashboard (existing, keep as-is) |
-| **Users** | User table with role badges, create user form, edit/deactivate actions |
-| **Caretakers** | Filtered view of caretaker users + their beneficiaries + application status |
-| **Beneficiaries** | All beneficiaries across orgs, with stats, search, edit |
-| **Posts** | All donations with status filter, donor/beneficiary info |
-| **Messages** | Full message log with sender/recipient info |
+### Code Review Fixes
+- **AdminPage**: Replaced fragile `includes('!')` success detection with `createSuccess` boolean state
+- **AdminPage**: Used shared `formatItemSummary` from formatters.ts in PostsTab (was duplicating logic)
+- **AdminPage**: Added error state + ErrorBlock to BeneficiariesTab (was missing entirely)
+- **ClaimModal**: Added error feedback (`msgError` state) on message send failure
+- **CreatePostPage**: Fixed variable shadowing (`t` → `type` in `ITEM_TYPES.find`)
 
-#### Sprint Plan
-| Sprint | Scope |
-|--------|-------|
-| 1 | Backend: all admin endpoints + frontend: tab shell + Users tab with create/list |
-| 2 | Caretakers tab (user list + their beneficiaries) + Beneficiaries tab |
-| 3 | Posts tab + Messages tab |
-| 4 | Polish: search, pagination, bulk actions |
+### What's Next
+- **Pagination** for admin list endpoints (currently unbounded)
+- **Admin tab caching** — tabs remount/refetch on every switch; lift state or cache
+- **Client-side filtering** — fetch once, filter locally instead of per-filter API calls
+- **Notifications** — push/email when donation assigned or message received
+- **Photo upload** — actual file upload endpoint (currently data URLs, 2MB limit)
+- **Vercel deployment** — connect domain, deploy frontend
 
 ---
 

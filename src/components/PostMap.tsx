@@ -28,6 +28,35 @@ export default function PostMap({
   const markersRef = useRef<mapboxgl.Marker[]>([]);
   const pinMarkerRef = useRef<mapboxgl.Marker | null>(null);
   const [ready, setReady] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searching, setSearching] = useState(false);
+  const [searchError, setSearchError] = useState(false);
+
+  async function handleSearch(e?: React.SyntheticEvent) {
+    e?.preventDefault();
+    if (!searchQuery.trim() || !mapRef.current) return;
+    setSearching(true);
+    setSearchError(false);
+    try {
+      const res = await fetch(
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(searchQuery.trim())}.json?access_token=${MAPBOX_TOKEN}&proximity=${MALMO_CENTER[0]},${MALMO_CENTER[1]}&limit=1`
+      );
+      if (!res.ok) { setSearchError(true); return; }
+      const data = await res.json();
+      const feature = data.features?.[0];
+      if (feature) {
+        const [lng, lat] = feature.center;
+        mapRef.current.flyTo({ center: [lng, lat], zoom: 15 });
+        onPinDrop?.(lat, lng);
+      } else {
+        setSearchError(true);
+      }
+    } catch {
+      setSearchError(true);
+    } finally {
+      setSearching(false);
+    }
+  }
 
   // Initialize map
   useEffect(() => {
@@ -45,7 +74,10 @@ export default function PostMap({
     map.on('load', () => setReady(true));
     mapRef.current = map;
 
-    return () => { map.remove(); };
+    const ro = new ResizeObserver(() => map.resize());
+    ro.observe(containerRef.current);
+
+    return () => { ro.disconnect(); map.remove(); };
   }, []);
 
   // Pin-drop click handler
@@ -114,6 +146,21 @@ export default function PostMap({
 
   return (
     <div className={`post-map ${className ?? ''}`}>
+      {pinDrop && (
+        <div className="post-map__search">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            placeholder={t('map.searchPlaceholder')}
+            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleSearch(e); } }}
+          />
+          <button type="button" className="btn-primary btn-sm" onClick={handleSearch} disabled={searching}>
+            {searching ? '...' : t('map.search')}
+          </button>
+          {searchError && <p className="error-msg">{t('common.error')}</p>}
+        </div>
+      )}
       <div ref={containerRef} className="post-map__container" role="application" aria-label="Map" />
       {!ready && <div className="post-map__loading">{t('map.loading')}</div>}
     </div>

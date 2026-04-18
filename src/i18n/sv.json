@@ -57,6 +57,7 @@
     "meetingInstructions": "Instruktioner för upphämtning (valfritt)",
     "meetingInstructionsHint": "t.ex. 'Påsar vid grinden', 'Ring på vid ankomst'",
     "timeWindow": "Tillgänglig för upphämtning",
+    "pickupDate": "Upphämtningsdatum",
     "from": "Från",
     "to": "Till",
     "submit": "Posta donation",
@@ -127,6 +128,16 @@
   },
   "admin": {
     "title": "Adminpanel",
+    "tabOverview": "Översikt",
+    "tabUsers": "Användare",
+    "tabApplications": "Ansökningar",
+    "tabBeneficiaries": "Mottagare",
+    "tabPosts": "Poster",
+    "tabMessages": "Meddelanden",
+    "createUser": "Skapa användare",
+    "role_donor": "Donator",
+    "role_caretaker": "Omsorgsgivare",
+    "role_admin": "Admin",
     "applications": "Omsorgsgivaransökningar",
     "noApplications": "Inga ansökningar hittades",
     "approve": "Godkänn",
@@ -157,7 +168,9 @@
   },
   "map": {
     "loading": "Laddar karta...",
-    "tokenMissing": "Karttoken saknas"
+    "tokenMissing": "Karttoken saknas",
+    "searchPlaceholder": "Sök adress eller postnummer...",
+    "search": "Sök"
   },
   "beneficiaries": {
     "title": "Mottagare",
@@ -218,7 +231,9 @@
   "claim": {
     "title": "Hämta upphämtning",
     "assignBeneficiary": "Tilldela en mottagare",
-    "confirm": "Hämta denna upphämtning"
+    "confirm": "Hämta denna upphämtning",
+    "messageDonor": "Meddela donatorn",
+    "messagePlaceholder": "Skicka ett meddelande till donatorn..."
   },
   "completion": {
     "title": "Slutför upphämtning",

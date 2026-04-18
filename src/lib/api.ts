@@ -183,6 +183,20 @@ export const adminApi = {
   stats: () => request<AdminStats>('GET', '/api/admin/stats'),
   createUser: (data: { email: string; password: string; alias: string; role?: 'donor' | 'caretaker' }) =>
     request<User>('POST', '/api/admin/users', data),
+  users: (role?: string) => {
+    const qs = role ? `?role=${encodeURIComponent(role)}` : '';
+    return request<User[]>('GET', `/api/admin/users${qs}`);
+  },
+  updateUser: (id: string, data: { role?: string; alias?: string; displayName?: string | null }) =>
+    request<User>('PATCH', `/api/admin/users/${id}`, data),
+  beneficiaries: () => request<Beneficiary[]>('GET', '/api/admin/beneficiaries'),
+  updateBeneficiary: (id: string, data: { name?: string; bio?: string; photoUrl?: string; isActive?: boolean }) =>
+    request<Beneficiary>('PATCH', `/api/admin/beneficiaries/${id}`, data),
+  posts: (status?: string) => {
+    const qs = status ? `?status=${encodeURIComponent(status)}` : '';
+    return request<Post[]>('GET', `/api/admin/posts${qs}`);
+  },
+  messages: () => request<Message[]>('GET', '/api/admin/messages'),
 };
 
 // ─── Pant prices ──────────────────────────────────────────────────────────────

@@ -1,16 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { postsApi, type PostItem, type ItemType } from '../lib/api';
+import { postsApi, favoritesApi, type PostItem, type ItemType, type Beneficiary } from '../lib/api';
 import PostMap from '../components/PostMap';
 
 const ITEM_TYPES: ItemType[] = ['can', 'pet_small', 'pet_large', 'glass_small', 'glass_large'];
-const PANT_PRICES: Record<ItemType, number> = {
-  can: 1, pet_small: 1, pet_large: 2, glass_small: 1, glass_large: 2,
-};
 
-function estimateSEK(items: PostItem[]): number {
-  return items.reduce((sum, i) => sum + i.quantity * PANT_PRICES[i.type], 0);
+function todayStr() {
+  return new Date().toISOString().slice(0, 10);
 }
 
 export default function CreatePostPage() {
@@ -19,14 +16,21 @@ export default function CreatePostPage() {
   const [items, setItems] = useState<PostItem[]>([{ type: 'can', quantity: 1 }]);
   const [pin, setPin] = useState<{ lat: number; lng: number } | null>(null);
   const [instructions, setInstructions] = useState('');
-  const [timeStart, setTimeStart] = useState('');
-  const [timeEnd, setTimeEnd] = useState('');
+  const [pickupDate, setPickupDate] = useState(todayStr());
+  const [timeFrom, setTimeFrom] = useState('13:00');
+  const [timeTo, setTimeTo] = useState('14:00');
+  const [targetBeneficiaryId, setTargetBeneficiaryId] = useState('');
+  const [favorites, setFavorites] = useState<Beneficiary[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
+  useEffect(() => {
+    favoritesApi.list().then(setFavorites).catch(err => console.error('favorites fetch failed', err));
+  }, []);
+
   function addItem() {
     const used = new Set(items.map(i => i.type));
-    const next = ITEM_TYPES.find(t => !used.has(t));
+    const next = ITEM_TYPES.find(type => !used.has(type));
     if (next) setItems([...items, { type: next, quantity: 1 }]);
   }
 
@@ -45,8 +49,8 @@ export default function CreatePostPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!pin) return;
-    const start = new Date(timeStart);
-    const end = new Date(timeEnd);
+    const start = new Date(`${pickupDate}T${timeFrom}`);
+    const end = new Date(`${pickupDate}T${timeTo}`);
     if (start >= end) { setError(t('posts.errorTimeOrder')); return; }
     if (start < new Date()) { setError(t('posts.errorTimePast')); return; }
     setSubmitting(true);
@@ -58,6 +62,7 @@ export default function CreatePostPage() {
         meetingInstructions: instructions || undefined,
         timeWindowStart: start.toISOString(),
         timeWindowEnd: end.toISOString(),
+        targetBeneficiaryId: targetBeneficiaryId || undefined,
       });
       navigate('/');
     } catch {
@@ -107,10 +112,19 @@ export default function CreatePostPage() {
               + {t('posts.addItem')}
             </button>
           )}
-          <p className="create-post__estimate">
-            {t('posts.estimatedValue')}: <strong>{estimateSEK(items)} {t('common.kr')}</strong>
-          </p>
         </fieldset>
+
+        {favorites.length > 0 && (
+          <label>
+            {t('posts.targetBeneficiary')}
+            <select value={targetBeneficiaryId} onChange={e => setTargetBeneficiaryId(e.target.value)}>
+              <option value="">{t('posts.generalDonation')}</option>
+              {favorites.map(b => (
+                <option key={b._id} value={b._id}>{b.name} — {b.organizationName}</option>
+              ))}
+            </select>
+          </label>
+        )}
 
         <fieldset className="create-post__location">
           <legend>{t('posts.meetingPoint')}</legend>
@@ -136,21 +150,25 @@ export default function CreatePostPage() {
 
         <fieldset className="create-post__time">
           <legend>{t('posts.timeWindow')}</legend>
+          <label>
+            {t('posts.pickupDate')}
+            <input type="date" value={pickupDate} onChange={e => setPickupDate(e.target.value)} required min={todayStr()} />
+          </label>
           <div className="create-post__time-row">
             <label>
               {t('posts.from')}
-              <input type="datetime-local" value={timeStart} onChange={e => setTimeStart(e.target.value)} required />
+              <input type="time" value={timeFrom} onChange={e => setTimeFrom(e.target.value)} required />
             </label>
             <label>
               {t('posts.to')}
-              <input type="datetime-local" value={timeEnd} onChange={e => setTimeEnd(e.target.value)} required />
+              <input type="time" value={timeTo} onChange={e => setTimeTo(e.target.value)} required />
             </label>
           </div>
         </fieldset>
 
         {error && <p className="error-msg">{error}</p>}
 
-        <button type="submit" disabled={submitting || !pin || !timeStart || !timeEnd}>
+        <button type="submit" disabled={submitting || !pin || !pickupDate || !timeFrom || !timeTo}>
           {submitting ? t('posts.creating') : t('posts.submit')}
         </button>
       </form>

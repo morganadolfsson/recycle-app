@@ -57,6 +57,7 @@
     "meetingInstructions": "Instructions for pickup (optional)",
     "meetingInstructionsHint": "e.g. 'Bags by the front gate', 'Ring bell on arrival'",
     "timeWindow": "Available for pickup",
+    "pickupDate": "Pickup date",
     "from": "From",
     "to": "To",
     "submit": "Post donation",
@@ -127,6 +128,16 @@
   },
   "admin": {
     "title": "Admin Panel",
+    "tabOverview": "Overview",
+    "tabUsers": "Users",
+    "tabApplications": "Applications",
+    "tabBeneficiaries": "Beneficiaries",
+    "tabPosts": "Posts",
+    "tabMessages": "Messages",
+    "createUser": "Create user",
+    "role_donor": "Donor",
+    "role_caretaker": "Caretaker",
+    "role_admin": "Admin",
     "applications": "Caretaker Applications",
     "noApplications": "No applications found",
     "approve": "Approve",
@@ -157,7 +168,9 @@
   },
   "map": {
     "loading": "Loading map...",
-    "tokenMissing": "Map token not configured"
+    "tokenMissing": "Map token not configured",
+    "searchPlaceholder": "Search address or zip code...",
+    "search": "Go"
   },
   "beneficiaries": {
     "title": "Beneficiaries",
@@ -218,7 +231,9 @@
   "claim": {
     "title": "Claim pickup",
     "assignBeneficiary": "Assign to a beneficiary",
-    "confirm": "Claim this pickup"
+    "confirm": "Claim this pickup",
+    "messageDonor": "Message donor",
+    "messagePlaceholder": "Send a note to the donor..."
   },
   "completion": {
     "title": "Complete pickup",

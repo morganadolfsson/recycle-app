@@ -242,7 +242,7 @@ button:disabled {
 
 .home-page__body {
   display: grid;
-  grid-template-columns: 1.3fr 0.7fr;
+  grid-template-columns: 3fr 1fr;
   gap: 1rem;
   align-items: start;
 }
@@ -362,6 +362,20 @@ button:disabled {
 .post-map__container {
   width: 100%;
   height: min(600px, 65vh);
+}
+
+.post-map__search {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border);
+}
+
+.post-map__search input {
+  flex: 1;
+  font-size: 0.85rem;
+  padding: 0.4rem 0.6rem;
 }
 
 .post-map__loading {
@@ -487,9 +501,133 @@ button:disabled {
 
 /* ── Admin page ──────────────────────────────────────────── */
 .admin-page h1 {
-  margin: 0 0 1.5rem;
+  margin: 0 0 1rem;
   font-size: 1.4rem;
   color: var(--text-h);
+}
+
+.admin-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1.25rem;
+  overflow-x: auto;
+}
+
+.admin-tab {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 0.6rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.admin-tab:hover { color: var(--accent); }
+.admin-tab--active { color: var(--accent); border-bottom-color: var(--accent); }
+
+.admin-section__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.admin-section__filters {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.admin-create-form {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.admin-table {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.admin-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  gap: 1rem;
+}
+
+.admin-row--inactive { opacity: 0.5; }
+
+.admin-row__main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.admin-row__main strong { color: var(--text-h); font-size: 0.9rem; }
+.admin-row__email { font-size: 0.8rem; color: var(--text); opacity: 0.6; }
+.admin-row__sub { font-size: 0.8rem; color: var(--text); opacity: 0.6; }
+.admin-row__sub--italic { font-style: italic; }
+.admin-row__msg-text { margin: 0; font-size: 0.85rem; color: var(--text-h); }
+
+.admin-row__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.admin-role-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-transform: capitalize;
+}
+
+.admin-role-badge--donor { background: rgba(59, 130, 246, 0.12); color: #3b82f6; }
+.admin-role-badge--caretaker { background: rgba(45, 138, 78, 0.12); color: var(--accent); }
+.admin-role-badge--admin { background: rgba(139, 92, 246, 0.12); color: #8b5cf6; }
+.admin-role-badge--pending { background: rgba(255, 193, 7, 0.15); color: #b8860b; }
+.admin-role-badge--approved { background: rgba(45, 138, 78, 0.12); color: var(--accent); }
+.admin-role-badge--rejected { background: rgba(220, 53, 69, 0.12); color: var(--danger); }
+
+.post-status-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-transform: capitalize;
+}
+
+.post-status-badge--open { background: rgba(255, 193, 7, 0.15); color: #b8860b; }
+.post-status-badge--claimed { background: rgba(59, 130, 246, 0.12); color: #3b82f6; }
+.post-status-badge--completed { background: rgba(45, 138, 78, 0.12); color: var(--accent); }
+
+.admin-inline-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.admin-inline-edit input {
+  font-size: 0.85rem;
+  padding: 0.35rem 0.5rem;
 }
 
 .admin-stats {
@@ -1563,4 +1701,48 @@ button:disabled {
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--accent);
+}
+
+.claim-modal__instructions {
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(45, 138, 78, 0.06);
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.claim-modal__instructions strong {
+  font-size: 0.8rem;
+  color: var(--text-h);
+}
+
+.claim-modal__instructions p {
+  margin: 0.25rem 0 0;
+}
+
+.claim-modal__message-section {
+  margin-top: 0.75rem;
+}
+
+.claim-modal__message-section label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-h);
+  margin-bottom: 0.35rem;
+}
+
+.claim-modal__message-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.claim-modal__message-row textarea {
+  flex: 1;
+  font-size: 0.85rem;
+}
+
+.claim-modal__message-row .btn-sm {
+  white-space: nowrap;
+  margin-top: 0.15rem;
 }
