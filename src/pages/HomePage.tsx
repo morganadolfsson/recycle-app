@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { postsApi, beneficiariesApi, type Post, type Beneficiary } from '../lib/api';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/useAuth';
 import PostCard from '../components/PostCard';
 import PostMap from '../components/PostMap';
 import AlertWidget from '../components/AlertWidget';

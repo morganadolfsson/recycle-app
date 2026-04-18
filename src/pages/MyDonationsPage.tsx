@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   donorApi, donorBeneficiaryApi, beneficiariesApi, messagesApi,
@@ -18,9 +18,9 @@ export default function MyDonationsPage() {
   const [error, setError] = useState('');
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
-  const fetchData = useCallback(() => {
-    setLoading(true);
+  const fetchData = () => {
     setError('');
+    setLoading(true);
     Promise.all([
       donorApi.myPosts(),
       beneficiariesApi.list(),
@@ -33,9 +33,28 @@ export default function MyDonationsPage() {
       setLikedIds(new Set(liked));
     }).catch(() => setError('fetch_error'))
       .finally(() => setLoading(false));
-  }, []);
+  };
 
-  useEffect(() => { fetchData(); }, [fetchData]);
+  useEffect(() => {
+    let cancelled = false;
+    Promise.all([
+      donorApi.myPosts(),
+      beneficiariesApi.list(),
+      donorBeneficiaryApi.myMessages(),
+      messagesApi.myLiked(),
+    ]).then(([p, b, msgs, liked]) => {
+      if (cancelled) return;
+      setPosts(p.sort((a, c) => new Date(c.createdAt).getTime() - new Date(a.createdAt).getTime()));
+      setAllBeneficiaries(b);
+      setAllMessages(msgs);
+      setLikedIds(new Set(liked));
+    }).catch(() => {
+      if (!cancelled) setError('fetch_error');
+    }).finally(() => {
+      if (!cancelled) setLoading(false);
+    });
+    return () => { cancelled = true; };
+  }, []);
 
   const benNames = useMemo(
     () => allBeneficiaries.reduce<Record<string, string>>((acc, b) => { acc[b._id] = b.name; return acc; }, {}),

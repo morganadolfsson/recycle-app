@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { beneficiariesApi, favoritesApi, donorBeneficiaryApi, type Beneficiary, type DonorBeneficiaryStat, type Message } from '../lib/api';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/useAuth';
 import LevelBadge from '../components/LevelBadge';
 import MessageCard from '../components/MessageCard';
 import StatCard from '../components/StatCard';

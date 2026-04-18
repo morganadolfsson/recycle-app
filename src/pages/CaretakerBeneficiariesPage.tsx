@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, type FormEvent, type ChangeEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { beneficiariesApi, messagesApi, activityApi, caretakerApi, type Beneficiary, type Message, type MessageReply, type ActivityItem, type Post } from '../lib/api';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/useAuth';
 import MessageCard from '../components/MessageCard';
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024;
