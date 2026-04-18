@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 
+# Environment variables (contains secrets)
+.env
+.env.*.local
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -22,3 +26,13 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# gstack local data (security reports, analytics)
+.gstack/
+
+# Local Claude Code settings
+.claude/settings.local.json
+
+# External tool outputs (mempalace memory-palace indexer)
+entities.json
+mempalace.yaml

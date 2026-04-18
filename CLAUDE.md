@@ -2,6 +2,11 @@
 
 See `CONTEXT.md` for full project context (tech stack, collections, API routes, phases).
 
+## Health Stack
+
+- typecheck: npx tsc --noEmit
+- lint: npm run lint
+
 ## Skill routing
 
 When the user's request matches an available skill, ALWAYS invoke it using the Skill
